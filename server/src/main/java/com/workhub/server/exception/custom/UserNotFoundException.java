@@ -1,11 +1,9 @@
 package com.workhub.server.exception.custom;
 
-public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(String message) {
-        super(message);
-    }
+import java.util.UUID;
 
-    public UserNotFoundException(Long id) {
-        super("User not found with id: " + id);
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(UUID id) {
+        super("User with id " + id + " not found");
     }
 }
