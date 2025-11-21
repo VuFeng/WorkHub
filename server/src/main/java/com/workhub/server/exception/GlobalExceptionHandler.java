@@ -1,13 +1,13 @@
 package com.workhub.server.exception;
 
-import java.util.Map;
-import java.time.LocalDateTime;
-
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
+import com.workhub.server.dto.response.ApiResponse;
+import com.workhub.server.dto.response.ErrorResponse;
 import com.workhub.server.exception.custom.DuplicateEmailException;
 import com.workhub.server.exception.custom.UserNotFoundException;
 
@@ -15,32 +15,58 @@ import com.workhub.server.exception.custom.UserNotFoundException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleUserNotFoundException(UserNotFoundException ex) {
-        return Map.of(
-                "error", "User not found",
-                "message", ex.getMessage(),
-                "status", HttpStatus.NOT_FOUND.value(),
-                "timestamp", LocalDateTime.now().toString());
+    public ResponseEntity<ApiResponse<ErrorResponse>> handleUserNotFoundException(
+            UserNotFoundException ex, WebRequest request) {
+        ErrorResponse errorDetails = ErrorResponse.builder()
+                .error("User Not Found")
+                .message(ex.getMessage())
+                .status(HttpStatus.NOT_FOUND.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        ApiResponse<ErrorResponse> response = ApiResponse.error("User not found", errorDetails);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @ExceptionHandler(DuplicateEmailException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, Object> handleDuplicateEmailException(DuplicateEmailException ex) {
-        return Map.of(
-                "error", "Duplicate email",
-                "message", ex.getMessage(),
-                "status", HttpStatus.CONFLICT.value(),
-                "timestamp", LocalDateTime.now().toString());
+    public ResponseEntity<ApiResponse<ErrorResponse>> handleDuplicateEmailException(
+            DuplicateEmailException ex, WebRequest request) {
+        ErrorResponse errorDetails = ErrorResponse.builder()
+                .error("Duplicate Email")
+                .message(ex.getMessage())
+                .status(HttpStatus.CONFLICT.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        ApiResponse<ErrorResponse> response = ApiResponse.error("Email already exists", errorDetails);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<ErrorResponse>> handleIllegalArgumentException(
+            IllegalArgumentException ex, WebRequest request) {
+        ErrorResponse errorDetails = ErrorResponse.builder()
+                .error("Bad Request")
+                .message(ex.getMessage())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        ApiResponse<ErrorResponse> response = ApiResponse.error("Invalid request", errorDetails);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, Object> handleGeneralException(Exception ex) {
-        return Map.of(
-                "error", "Internal server error",
-                "message", ex.getMessage(),
-                "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "timestamp", LocalDateTime.now().toString());
+    public ResponseEntity<ApiResponse<ErrorResponse>> handleGeneralException(
+            Exception ex, WebRequest request) {
+        ErrorResponse errorDetails = ErrorResponse.builder()
+                .error("Internal Server Error")
+                .message(ex.getMessage())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        ApiResponse<ErrorResponse> response = ApiResponse.error("An unexpected error occurred", errorDetails);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }

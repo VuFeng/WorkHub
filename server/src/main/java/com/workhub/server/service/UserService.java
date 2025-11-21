@@ -1,7 +1,5 @@
 package com.workhub.server.service;
 
-import java.util.Map;
-
 import com.workhub.server.dto.request.UserRequest;
 import com.workhub.server.dto.response.UserResponse;
 import com.workhub.server.dto.response.PaginationResponse;
@@ -15,5 +13,5 @@ public interface UserService {
 
     PaginationResponse<UserResponse> getAllUsers(int page, int size);
 
-    Map<String, Object> deleteUser(Long id);
+    void deleteUser(Long id);
 }

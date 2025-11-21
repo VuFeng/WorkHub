@@ -1,7 +1,5 @@
 package com.workhub.server.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -90,20 +88,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> deleteUser(Long id) {
-        User user = userRepository.findById(id)
+    public void deleteUser(Long id) {
+        userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
-        String deletedUserName = user.getName();
-        String deletedUserEmail = user.getEmail();
-
         userRepository.deleteById(id);
-
-        return Map.of(
-                "message", "User deleted successfully",
-                "deletedUserId", id,
-                "deletedUserName", deletedUserName,
-                "deletedUserEmail", deletedUserEmail,
-                "timestamp", LocalDateTime.now().toString());
     }
 }
