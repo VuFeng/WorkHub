@@ -11,6 +11,7 @@ import com.workhub.server.dto.response.ErrorResponse;
 import com.workhub.server.exception.custom.CompanyNotFoundException;
 import com.workhub.server.exception.custom.DuplicateCompanyNameException;
 import com.workhub.server.exception.custom.DuplicateEmailException;
+import com.workhub.server.exception.custom.JobNotFoundException;
 import com.workhub.server.exception.custom.UserNotFoundException;
 
 @RestControllerAdvice
@@ -72,6 +73,21 @@ public class GlobalExceptionHandler {
 
         ApiResponse<ErrorResponse> response = ApiResponse.error("Company name already exists", errorDetails);
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    // Job Exceptions
+    @ExceptionHandler(JobNotFoundException.class)
+    public ResponseEntity<ApiResponse<ErrorResponse>> handleJobNotFoundException(
+            JobNotFoundException ex, WebRequest request) {
+        ErrorResponse errorDetails = ErrorResponse.builder()
+                .error("Job Not Found")
+                .message(ex.getMessage())
+                .status(HttpStatus.NOT_FOUND.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        ApiResponse<ErrorResponse> response = ApiResponse.error("Job not found", errorDetails);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     // General Exceptions
