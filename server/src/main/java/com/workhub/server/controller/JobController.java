@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.workhub.server.constant.JobStatus;
 import com.workhub.server.dto.request.JobRequest;
+import com.workhub.server.dto.request.JobStatusUpdateRequest;
 import com.workhub.server.dto.response.ApiResponse;
 import com.workhub.server.dto.response.JobResponse;
 import com.workhub.server.dto.response.PaginationResponse;
@@ -24,6 +25,8 @@ import com.workhub.server.service.JobService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController
 @RequestMapping("/api/jobs")
@@ -106,6 +109,15 @@ public class JobController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<JobResponse>> updateJobStatus(
+            @PathVariable UUID id,
+            @Valid @RequestBody JobStatusUpdateRequest request) {
+        JobResponse job = jobService.updateJobStatus(id, request);
+        ApiResponse<JobResponse> response = ApiResponse.success("Job status updated successfully", job);
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteJob(@PathVariable UUID id) {
         jobService.deleteJob(id);
@@ -113,5 +125,3 @@ public class JobController {
         return ResponseEntity.ok(response);
     }
 }
-
-

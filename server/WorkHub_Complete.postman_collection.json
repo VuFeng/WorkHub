@@ -1,0 +1,567 @@
+{
+  "info": {
+    "name": "WorkHub API - Complete (All 36 Endpoints)",
+    "description": "Full API collection with all CRUD operations, filters, and PATCH endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "2.0.0"
+  },
+  "item": [
+    {
+      "name": "1. Company Module (5 endpoints)",
+      "item": [
+        {
+          "name": "Create Company",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('companyId', jsonData.data.id);",
+                  "    console.log('Company ID saved:', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tech Innovators Ltd\",\n  \"address\": \"123 Tech Street, Silicon Valley, CA 94000\",\n  \"logoUrl\": \"https://example.com/logos/tech-innovators.png\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/companies", "host": ["{{baseUrl}}"], "path": ["api", "companies"]}
+          }
+        },
+        {
+          "name": "Get Company by ID",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/companies/{{companyId}}", "host": ["{{baseUrl}}"], "path": ["api", "companies", "{{companyId}}"]}
+          }
+        },
+        {
+          "name": "Get All Companies (Paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/companies?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "companies"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tech Innovators Corporation\",\n  \"address\": \"789 New Tech Blvd, Silicon Valley, CA 94000\",\n  \"logoUrl\": \"https://example.com/logos/new-logo.png\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/companies/{{companyId}}", "host": ["{{baseUrl}}"], "path": ["api", "companies", "{{companyId}}"]}
+          }
+        },
+        {
+          "name": "Delete Company",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/api/companies/{{companyId}}", "host": ["{{baseUrl}}"], "path": ["api", "companies", "{{companyId}}"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. User Module (6 endpoints)",
+      "item": [
+        {
+          "name": "Create User (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('userId', jsonData.data.id);",
+                  "    console.log('User ID saved:', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"fullName\": \"John Doe\",\n  \"email\": \"john.doe@techinnovators.com\",\n  \"password\": \"SecurePass123\",\n  \"avatarUrl\": \"https://example.com/avatars/john.jpg\",\n  \"role\": \"ADMIN\",\n  \"isActive\": true\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "Create User (MANAGER)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"fullName\": \"Jane Smith\",\n  \"email\": \"jane.smith@techinnovators.com\",\n  \"password\": \"ManagerPass456\",\n  \"role\": \"MANAGER\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "Create User (STAFF)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"fullName\": \"Bob Wilson\",\n  \"email\": \"bob.wilson@techinnovators.com\",\n  \"password\": \"StaffPass789\",\n  \"role\": \"STAFF\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/users", "host": ["{{baseUrl}}"], "path": ["api", "users"]}
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{userId}}"]}
+          }
+        },
+        {
+          "name": "Get All Users (Paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Users by Company",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/company/{{companyId}}?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "company", "{{companyId}}"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"fullName\": \"John Doe Updated\",\n  \"email\": \"john.doe@techinnovators.com\",\n  \"password\": \"\",\n  \"avatarUrl\": \"https://example.com/avatars/john-new.jpg\",\n  \"role\": \"MANAGER\",\n  \"isActive\": true\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{userId}}"]}
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/api/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "users", "{{userId}}"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Job Module (9 endpoints)",
+      "item": [
+        {
+          "name": "Create Job (HIGH - PENDING)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('jobId', jsonData.data.id);",
+                  "    console.log('Job ID saved:', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"ownerId\": \"{{userId}}\",\n  \"title\": \"Develop User Authentication System\",\n  \"description\": \"Implement JWT-based authentication\",\n  \"status\": \"PENDING\",\n  \"priority\": \"HIGH\",\n  \"deadline\": \"2024-12-31T23:59:59\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/jobs", "host": ["{{baseUrl}}"], "path": ["api", "jobs"]}
+          }
+        },
+        {
+          "name": "Get Job by ID",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}"]}
+          }
+        },
+        {
+          "name": "Get All Jobs (Paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Jobs by Company",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs/company/{{companyId}}?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs", "company", "{{companyId}}"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Jobs by Owner",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs/owner/{{userId}}?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs", "owner", "{{userId}}"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Jobs by Status (PENDING)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs/status/PENDING?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs", "status", "PENDING"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Jobs by Company & Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/jobs/company/{{companyId}}/status/PENDING?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "jobs", "company", "{{companyId}}", "status", "PENDING"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Update Job (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"ownerId\": \"{{userId}}\",\n  \"title\": \"Develop User Authentication System - Updated\",\n  \"description\": \"Implement JWT-based authentication with OAuth2 support\",\n  \"status\": \"IN_PROGRESS\",\n  \"priority\": \"HIGH\",\n  \"deadline\": \"2024-12-31T23:59:59\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}"]}
+          }
+        },
+        {
+          "name": "Update Job Status (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/jobs/{{jobId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}", "status"]}
+          }
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/api/jobs/{{jobId}}", "host": ["{{baseUrl}}"], "path": ["api", "jobs", "{{jobId}}"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Task Module (11 endpoints)",
+      "item": [
+        {
+          "name": "Create Task (TODO)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('taskId', jsonData.data.id);",
+                  "    console.log('Task ID saved:', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"jobId\": \"{{jobId}}\",\n  \"assigneeId\": \"{{userId}}\",\n  \"title\": \"Design Login Page UI\",\n  \"description\": \"Create mockup and design for login page\",\n  \"status\": \"TODO\",\n  \"startDate\": \"2024-11-22T09:00:00\",\n  \"dueDate\": \"2024-11-25T17:00:00\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/tasks", "host": ["{{baseUrl}}"], "path": ["api", "tasks"]}
+          }
+        },
+        {
+          "name": "Create Task (DOING)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"jobId\": \"{{jobId}}\",\n  \"assigneeId\": \"{{userId}}\",\n  \"title\": \"Implement JWT Token Generation\",\n  \"description\": \"Create service for JWT tokens\",\n  \"status\": \"DOING\",\n  \"startDate\": \"2024-11-20T09:00:00\",\n  \"dueDate\": \"2024-11-27T17:00:00\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/tasks", "host": ["{{baseUrl}}"], "path": ["api", "tasks"]}
+          }
+        },
+        {
+          "name": "Get Task by ID",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/tasks/{{taskId}}", "host": ["{{baseUrl}}"], "path": ["api", "tasks", "{{taskId}}"]}
+          }
+        },
+        {
+          "name": "Get All Tasks (Paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Tasks by Company",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/company/{{companyId}}?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "company", "{{companyId}}"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Tasks by Job",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/job/{{jobId}}?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "job", "{{jobId}}"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Tasks by Assignee",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/assignee/{{userId}}?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "assignee", "{{userId}}"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Tasks by Status (TODO)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/status/TODO?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "status", "TODO"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Tasks by Job & Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/job/{{jobId}}/status/TODO?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "job", "{{jobId}}", "status", "TODO"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Get Tasks by Assignee & Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/assignee/{{userId}}/status/DOING?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "assignee", "{{userId}}", "status", "DOING"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "10"}]
+            }
+          }
+        },
+        {
+          "name": "Update Task (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyId\": \"{{companyId}}\",\n  \"jobId\": \"{{jobId}}\",\n  \"assigneeId\": \"{{userId}}\",\n  \"title\": \"Design Login Page UI - Updated\",\n  \"description\": \"Create responsive mockup for login page\",\n  \"status\": \"DOING\",\n  \"startDate\": \"2024-11-22T09:00:00\",\n  \"dueDate\": \"2024-11-25T17:00:00\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/tasks/{{taskId}}", "host": ["{{baseUrl}}"], "path": ["api", "tasks", "{{taskId}}"]}
+          }
+        },
+        {
+          "name": "Update Task Status (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"REVIEW\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/tasks/{{taskId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "tasks", "{{taskId}}", "status"]}
+          }
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/api/tasks/{{taskId}}", "host": ["{{baseUrl}}"], "path": ["api", "tasks", "{{taskId}}"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. TaskComment Module (5 endpoints)",
+      "item": [
+        {
+          "name": "Create Comment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.environment.set('commentId', jsonData.data.id);",
+                  "    console.log('Comment ID saved:', jsonData.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"taskId\": \"{{taskId}}\",\n  \"userId\": \"{{userId}}\",\n  \"message\": \"Started working on this task. Will update progress soon.\"\n}"
+            },
+            "url": {"raw": "{{baseUrl}}/api/task-comments", "host": ["{{baseUrl}}"], "path": ["api", "task-comments"]}
+          }
+        },
+        {
+          "name": "Get Comment by ID",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{baseUrl}}/api/task-comments/{{commentId}}", "host": ["{{baseUrl}}"], "path": ["api", "task-comments", "{{commentId}}"]}
+          }
+        },
+        {
+          "name": "Get All Comments (Paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/task-comments?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "task-comments"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "20"}]
+            }
+          }
+        },
+        {
+          "name": "Get Comments by Task",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/task-comments/task/{{taskId}}?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "task-comments", "task", "{{taskId}}"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "20"}]
+            }
+          }
+        },
+        {
+          "name": "Get Comments by User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/task-comments/user/{{userId}}?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "task-comments", "user", "{{userId}}"],
+              "query": [{"key": "page", "value": "0"}, {"key": "size", "value": "20"}]
+            }
+          }
+        },
+        {
+          "name": "Delete Comment",
+          "request": {
+            "method": "DELETE",
+            "url": {"raw": "{{baseUrl}}/api/task-comments/{{commentId}}", "host": ["{{baseUrl}}"], "path": ["api", "task-comments", "{{commentId}}"]}
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8080", "type": "string"},
+    {"key": "companyId", "value": "", "type": "string"},
+    {"key": "userId", "value": "", "type": "string"},
+    {"key": "jobId", "value": "", "type": "string"},
+    {"key": "taskId", "value": "", "type": "string"},
+    {"key": "commentId", "value": "", "type": "string"}
+  ]
+}

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.workhub.server.constant.JobStatus;
 import com.workhub.server.dto.request.JobRequest;
+import com.workhub.server.dto.request.JobStatusUpdateRequest;
 import com.workhub.server.dto.response.JobResponse;
 import com.workhub.server.dto.response.PaginationResponse;
 import com.workhub.server.entity.Company;
@@ -76,6 +77,17 @@ public class JobServiceImpl implements JobService {
                 }
 
                 jobMapper.updateEntityFromRequest(request, job);
+                Job updatedJob = jobRepository.save(job);
+                return jobMapper.toResponse(updatedJob);
+        }
+
+        @Override
+        @Transactional
+        public JobResponse updateJobStatus(UUID id, JobStatusUpdateRequest request) {
+                Job job = jobRepository.findById(id)
+                                .orElseThrow(() -> new JobNotFoundException(id));
+
+                job.setStatus(request.getStatus());
                 Job updatedJob = jobRepository.save(job);
                 return jobMapper.toResponse(updatedJob);
         }

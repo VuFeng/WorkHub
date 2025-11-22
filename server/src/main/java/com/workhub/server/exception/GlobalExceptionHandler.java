@@ -16,6 +16,8 @@ import com.workhub.server.exception.custom.CompanyNotFoundException;
 import com.workhub.server.exception.custom.DuplicateCompanyNameException;
 import com.workhub.server.exception.custom.DuplicateEmailException;
 import com.workhub.server.exception.custom.JobNotFoundException;
+import com.workhub.server.exception.custom.TaskCommentNotFoundException;
+import com.workhub.server.exception.custom.TaskNotFoundException;
 import com.workhub.server.exception.custom.UserNotFoundException;
 
 @RestControllerAdvice
@@ -91,6 +93,36 @@ public class GlobalExceptionHandler {
                                 .build();
 
                 ApiResponse<ErrorResponse> response = ApiResponse.error("Job not found", errorDetails);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        // Task Exceptions
+        @ExceptionHandler(TaskNotFoundException.class)
+        public ResponseEntity<ApiResponse<ErrorResponse>> handleTaskNotFoundException(
+                        TaskNotFoundException ex, WebRequest request) {
+                ErrorResponse errorDetails = ErrorResponse.builder()
+                                .error("Task Not Found")
+                                .message(ex.getMessage())
+                                .status(HttpStatus.NOT_FOUND.value())
+                                .path(request.getDescription(false).replace("uri=", ""))
+                                .build();
+
+                ApiResponse<ErrorResponse> response = ApiResponse.error("Task not found", errorDetails);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+
+        // TaskComment Exceptions
+        @ExceptionHandler(TaskCommentNotFoundException.class)
+        public ResponseEntity<ApiResponse<ErrorResponse>> handleTaskCommentNotFoundException(
+                        TaskCommentNotFoundException ex, WebRequest request) {
+                ErrorResponse errorDetails = ErrorResponse.builder()
+                                .error("Task Comment Not Found")
+                                .message(ex.getMessage())
+                                .status(HttpStatus.NOT_FOUND.value())
+                                .path(request.getDescription(false).replace("uri=", ""))
+                                .build();
+
+                ApiResponse<ErrorResponse> response = ApiResponse.error("Comment not found", errorDetails);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
