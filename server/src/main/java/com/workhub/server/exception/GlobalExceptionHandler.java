@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -151,6 +153,34 @@ public class GlobalExceptionHandler {
 
                 ApiResponse<ErrorResponse> response = ApiResponse.error("Validation failed", errorDetails);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        @ExceptionHandler(BadCredentialsException.class)
+        public ResponseEntity<ApiResponse<ErrorResponse>> handleBadCredentialsException(
+                        BadCredentialsException ex, WebRequest request) {
+                ErrorResponse errorDetails = ErrorResponse.builder()
+                                .error("Authentication Failed")
+                                .message(ex.getMessage())
+                                .status(HttpStatus.UNAUTHORIZED.value())
+                                .path(request.getDescription(false).replace("uri=", ""))
+                                .build();
+
+                ApiResponse<ErrorResponse> response = ApiResponse.error("Authentication failed", errorDetails);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<ApiResponse<ErrorResponse>> handleAccessDeniedException(
+                        AccessDeniedException ex, WebRequest request) {
+                ErrorResponse errorDetails = ErrorResponse.builder()
+                                .error("Forbidden")
+                                .message(ex.getMessage())
+                                .status(HttpStatus.FORBIDDEN.value())
+                                .path(request.getDescription(false).replace("uri=", ""))
+                                .build();
+
+                ApiResponse<ErrorResponse> response = ApiResponse.error("Access denied", errorDetails);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
 
         @ExceptionHandler(IllegalArgumentException.class)

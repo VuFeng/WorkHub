@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workhub.server.constant.JobStatus;
+import com.workhub.server.constant.UserRole;
 import com.workhub.server.dto.request.JobRequest;
 import com.workhub.server.dto.request.JobStatusUpdateRequest;
 import com.workhub.server.dto.response.ApiResponse;
 import com.workhub.server.dto.response.JobResponse;
 import com.workhub.server.dto.response.PaginationResponse;
+import com.workhub.server.security.annotation.RequireAnyRole;
+import com.workhub.server.security.annotation.RequireRole;
 import com.workhub.server.service.JobService;
 
 import jakarta.validation.Valid;
@@ -36,6 +39,7 @@ public class JobController {
     private final JobService jobService;
 
     @PostMapping
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER})
     public ResponseEntity<ApiResponse<JobResponse>> createJob(
             @Valid @RequestBody JobRequest request) {
         JobResponse job = jobService.createJob(request);
@@ -44,6 +48,7 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<JobResponse>> getJobById(@PathVariable UUID id) {
         JobResponse job = jobService.getJobById(id);
         ApiResponse<JobResponse> response = ApiResponse.success(job);
@@ -51,6 +56,7 @@ public class JobController {
     }
 
     @GetMapping
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<JobResponse>>> getAllJobs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -60,6 +66,7 @@ public class JobController {
     }
 
     @GetMapping("/company/{companyId}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<JobResponse>>> getJobsByCompany(
             @PathVariable UUID companyId,
             @RequestParam(defaultValue = "0") int page,
@@ -70,6 +77,7 @@ public class JobController {
     }
 
     @GetMapping("/owner/{ownerId}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<JobResponse>>> getJobsByOwner(
             @PathVariable UUID ownerId,
             @RequestParam(defaultValue = "0") int page,
@@ -80,6 +88,7 @@ public class JobController {
     }
 
     @GetMapping("/status/{status}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<JobResponse>>> getJobsByStatus(
             @PathVariable JobStatus status,
             @RequestParam(defaultValue = "0") int page,
@@ -90,6 +99,7 @@ public class JobController {
     }
 
     @GetMapping("/company/{companyId}/status/{status}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<JobResponse>>> getJobsByCompanyAndStatus(
             @PathVariable UUID companyId,
             @PathVariable JobStatus status,
@@ -101,6 +111,7 @@ public class JobController {
     }
 
     @PutMapping("/{id}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER})
     public ResponseEntity<ApiResponse<JobResponse>> updateJob(
             @PathVariable UUID id,
             @Valid @RequestBody JobRequest request) {
@@ -110,6 +121,7 @@ public class JobController {
     }
 
     @PatchMapping("/{id}/status")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER})
     public ResponseEntity<ApiResponse<JobResponse>> updateJobStatus(
             @PathVariable UUID id,
             @Valid @RequestBody JobStatusUpdateRequest request) {
@@ -119,6 +131,7 @@ public class JobController {
     }
 
     @DeleteMapping("/{id}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER})
     public ResponseEntity<ApiResponse<Void>> deleteJob(@PathVariable UUID id) {
         jobService.deleteJob(id);
         ApiResponse<Void> response = ApiResponse.successWithoutData("Job deleted successfully");

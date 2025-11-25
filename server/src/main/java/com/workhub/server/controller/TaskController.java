@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workhub.server.constant.TaskStatus;
+import com.workhub.server.constant.UserRole;
 import com.workhub.server.dto.request.TaskRequest;
 import com.workhub.server.dto.request.TaskStatusUpdateRequest;
 import com.workhub.server.dto.response.ApiResponse;
 import com.workhub.server.dto.response.PaginationResponse;
 import com.workhub.server.dto.response.TaskResponse;
+import com.workhub.server.security.annotation.RequireAnyRole;
 import com.workhub.server.service.TaskService;
 
 import jakarta.validation.Valid;
@@ -36,6 +38,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER})
     public ResponseEntity<ApiResponse<TaskResponse>> createTask(
             @Valid @RequestBody TaskRequest request) {
         TaskResponse task = taskService.createTask(request);
@@ -44,6 +47,7 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<TaskResponse>> getTaskById(@PathVariable UUID id) {
         TaskResponse task = taskService.getTaskById(id);
         ApiResponse<TaskResponse> response = ApiResponse.success(task);
@@ -51,6 +55,7 @@ public class TaskController {
     }
 
     @GetMapping
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<TaskResponse>>> getAllTasks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -60,6 +65,7 @@ public class TaskController {
     }
 
     @GetMapping("/company/{companyId}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<TaskResponse>>> getTasksByCompany(
             @PathVariable UUID companyId,
             @RequestParam(defaultValue = "0") int page,
@@ -70,6 +76,7 @@ public class TaskController {
     }
 
     @GetMapping("/job/{jobId}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<TaskResponse>>> getTasksByJob(
             @PathVariable UUID jobId,
             @RequestParam(defaultValue = "0") int page,
@@ -80,6 +87,7 @@ public class TaskController {
     }
 
     @GetMapping("/assignee/{assigneeId}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<TaskResponse>>> getTasksByAssignee(
             @PathVariable UUID assigneeId,
             @RequestParam(defaultValue = "0") int page,
@@ -90,6 +98,7 @@ public class TaskController {
     }
 
     @GetMapping("/status/{status}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<TaskResponse>>> getTasksByStatus(
             @PathVariable TaskStatus status,
             @RequestParam(defaultValue = "0") int page,
@@ -100,6 +109,7 @@ public class TaskController {
     }
 
     @GetMapping("/job/{jobId}/status/{status}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<TaskResponse>>> getTasksByJobAndStatus(
             @PathVariable UUID jobId,
             @PathVariable TaskStatus status,
@@ -111,6 +121,7 @@ public class TaskController {
     }
 
     @GetMapping("/assignee/{assigneeId}/status/{status}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER, UserRole.STAFF})
     public ResponseEntity<ApiResponse<PaginationResponse<TaskResponse>>> getTasksByAssigneeAndStatus(
             @PathVariable UUID assigneeId,
             @PathVariable TaskStatus status,
@@ -122,6 +133,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER})
     public ResponseEntity<ApiResponse<TaskResponse>> updateTask(
             @PathVariable UUID id,
             @Valid @RequestBody TaskRequest request) {
@@ -131,6 +143,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/status")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER})
     public ResponseEntity<ApiResponse<TaskResponse>> updateTaskStatus(
             @PathVariable UUID id,
             @Valid @RequestBody TaskStatusUpdateRequest request) {
@@ -140,6 +153,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
+    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER})
     public ResponseEntity<ApiResponse<Void>> deleteTask(@PathVariable UUID id) {
         taskService.deleteTask(id);
         ApiResponse<Void> response = ApiResponse.successWithoutData("Task deleted successfully");
