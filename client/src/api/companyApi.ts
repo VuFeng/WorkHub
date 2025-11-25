@@ -3,7 +3,6 @@ import apiClient from "./client";
 import type {
   CompanyRequest,
   CompanyResponse,
-  ApiResponse,
   PaginationResponse,
   PaginationParams,
 } from "../types";
@@ -17,9 +16,9 @@ export const useCompanies = (params?: PaginationParams) => {
     queryKey: ["companies", params],
     queryFn: async () => {
       const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<CompanyResponse>>
+        PaginationResponse<CompanyResponse>
       >(COMPANY_ENDPOINT, { params });
-      return data.data;
+      return data;
     },
   });
 };
@@ -29,10 +28,10 @@ export const useCompany = (id: string) => {
   return useQuery({
     queryKey: ["companies", id],
     queryFn: async () => {
-      const { data } = await apiClient.get<ApiResponse<CompanyResponse>>(
+      const { data } = await apiClient.get<CompanyResponse>(
         `${COMPANY_ENDPOINT}/${id}`
       );
-      return data.data;
+      return data;
     },
     enabled: !!id,
   });
@@ -44,11 +43,11 @@ export const useCreateCompany = () => {
 
   return useMutation({
     mutationFn: async (companyData: CompanyRequest) => {
-      const { data } = await apiClient.post<ApiResponse<CompanyResponse>>(
+      const { data } = await apiClient.post<CompanyResponse>(
         COMPANY_ENDPOINT,
         companyData
       );
-      return data.data;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -68,11 +67,11 @@ export const useUpdateCompany = () => {
       id: string;
       companyData: CompanyRequest;
     }) => {
-      const { data } = await apiClient.put<ApiResponse<CompanyResponse>>(
+      const { data } = await apiClient.put<CompanyResponse>(
         `${COMPANY_ENDPOINT}/${id}`,
         companyData
       );
-      return data.data;
+      return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["companies"] });
@@ -87,7 +86,7 @@ export const useDeleteCompany = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      await apiClient.delete<ApiResponse<void>>(`${COMPANY_ENDPOINT}/${id}`);
+      await apiClient.delete<void>(`${COMPANY_ENDPOINT}/${id}`);
       return id;
     },
     onSuccess: () => {

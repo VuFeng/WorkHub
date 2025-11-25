@@ -3,7 +3,6 @@ import apiClient from "./client";
 import type {
   JobRequest,
   JobResponse,
-  ApiResponse,
   PaginationResponse,
   JobFilters,
 } from "../types";
@@ -16,10 +15,11 @@ export const useJobs = (filters?: JobFilters) => {
   return useQuery({
     queryKey: ["jobs", filters],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<JobResponse>>
-      >(JOB_ENDPOINT, { params: filters });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<JobResponse>>(
+        JOB_ENDPOINT,
+        { params: filters }
+      );
+      return data;
     },
   });
 };
@@ -29,10 +29,10 @@ export const useJob = (id: string) => {
   return useQuery({
     queryKey: ["jobs", id],
     queryFn: async () => {
-      const { data } = await apiClient.get<ApiResponse<JobResponse>>(
+      const { data } = await apiClient.get<JobResponse>(
         `${JOB_ENDPOINT}/${id}`
       );
-      return data.data;
+      return data;
     },
     enabled: !!id,
   });
@@ -43,10 +43,11 @@ export const useJobsByCompany = (companyId: string, params?: JobFilters) => {
   return useQuery({
     queryKey: ["jobs", "company", companyId, params],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<JobResponse>>
-      >(`${JOB_ENDPOINT}/company/${companyId}`, { params });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<JobResponse>>(
+        `${JOB_ENDPOINT}/company/${companyId}`,
+        { params }
+      );
+      return data;
     },
     enabled: !!companyId,
   });
@@ -57,10 +58,11 @@ export const useJobsByOwner = (ownerId: string, params?: JobFilters) => {
   return useQuery({
     queryKey: ["jobs", "owner", ownerId, params],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<JobResponse>>
-      >(`${JOB_ENDPOINT}/owner/${ownerId}`, { params });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<JobResponse>>(
+        `${JOB_ENDPOINT}/owner/${ownerId}`,
+        { params }
+      );
+      return data;
     },
     enabled: !!ownerId,
   });
@@ -71,10 +73,11 @@ export const useJobsByStatus = (status: string, params?: JobFilters) => {
   return useQuery({
     queryKey: ["jobs", "status", status, params],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<JobResponse>>
-      >(`${JOB_ENDPOINT}/status/${status}`, { params });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<JobResponse>>(
+        `${JOB_ENDPOINT}/status/${status}`,
+        { params }
+      );
+      return data;
     },
     enabled: !!status,
   });
@@ -86,11 +89,11 @@ export const useCreateJob = () => {
 
   return useMutation({
     mutationFn: async (jobData: JobRequest) => {
-      const { data } = await apiClient.post<ApiResponse<JobResponse>>(
+      const { data } = await apiClient.post<JobResponse>(
         JOB_ENDPOINT,
         jobData
       );
-      return data.data;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
@@ -110,11 +113,11 @@ export const useUpdateJob = () => {
       id: string;
       jobData: Partial<JobRequest>;
     }) => {
-      const { data } = await apiClient.put<ApiResponse<JobResponse>>(
+      const { data } = await apiClient.put<JobResponse>(
         `${JOB_ENDPOINT}/${id}`,
         jobData
       );
-      return data.data;
+      return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["jobs"] });
@@ -129,7 +132,7 @@ export const useDeleteJob = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      await apiClient.delete<ApiResponse<void>>(`${JOB_ENDPOINT}/${id}`);
+      await apiClient.delete<void>(`${JOB_ENDPOINT}/${id}`);
       return id;
     },
     onSuccess: () => {

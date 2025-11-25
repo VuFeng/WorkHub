@@ -3,7 +3,6 @@ import apiClient from "./client";
 import type {
   UserRequest,
   UserResponse,
-  ApiResponse,
   PaginationResponse,
   PaginationParams,
 } from "../types";
@@ -16,10 +15,11 @@ export const useUsers = (params?: PaginationParams) => {
   return useQuery({
     queryKey: ["users", params],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<UserResponse>>
-      >(USER_ENDPOINT, { params });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<UserResponse>>(
+        USER_ENDPOINT,
+        { params }
+      );
+      return data;
     },
   });
 };
@@ -29,10 +29,10 @@ export const useUser = (id: string) => {
   return useQuery({
     queryKey: ["users", id],
     queryFn: async () => {
-      const { data } = await apiClient.get<ApiResponse<UserResponse>>(
+      const { data } = await apiClient.get<UserResponse>(
         `${USER_ENDPOINT}/${id}`
       );
-      return data.data;
+      return data;
     },
     enabled: !!id,
   });
@@ -46,10 +46,11 @@ export const useUsersByCompany = (
   return useQuery({
     queryKey: ["users", "company", companyId, params],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<UserResponse>>
-      >(`${USER_ENDPOINT}/company/${companyId}`, { params });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<UserResponse>>(
+        `${USER_ENDPOINT}/company/${companyId}`,
+        { params }
+      );
+      return data;
     },
     enabled: !!companyId,
   });
@@ -61,11 +62,11 @@ export const useCreateUser = () => {
 
   return useMutation({
     mutationFn: async (userData: UserRequest) => {
-      const { data } = await apiClient.post<ApiResponse<UserResponse>>(
+      const { data } = await apiClient.post<UserResponse>(
         USER_ENDPOINT,
         userData
       );
-      return data.data;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -85,11 +86,11 @@ export const useUpdateUser = () => {
       id: string;
       userData: Partial<UserRequest>;
     }) => {
-      const { data } = await apiClient.put<ApiResponse<UserResponse>>(
+      const { data } = await apiClient.put<UserResponse>(
         `${USER_ENDPOINT}/${id}`,
         userData
       );
-      return data.data;
+      return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -104,7 +105,7 @@ export const useDeleteUser = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      await apiClient.delete<ApiResponse<void>>(`${USER_ENDPOINT}/${id}`);
+      await apiClient.delete<void>(`${USER_ENDPOINT}/${id}`);
       return id;
     },
     onSuccess: () => {

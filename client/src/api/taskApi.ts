@@ -3,7 +3,6 @@ import apiClient from "./client";
 import type {
   TaskRequest,
   TaskResponse,
-  ApiResponse,
   PaginationResponse,
   TaskFilters,
 } from "../types";
@@ -16,10 +15,11 @@ export const useTasks = (filters?: TaskFilters) => {
   return useQuery({
     queryKey: ["tasks", filters],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<TaskResponse>>
-      >(TASK_ENDPOINT, { params: filters });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<TaskResponse>>(
+        TASK_ENDPOINT,
+        { params: filters }
+      );
+      return data;
     },
   });
 };
@@ -29,10 +29,10 @@ export const useTask = (id: string) => {
   return useQuery({
     queryKey: ["tasks", id],
     queryFn: async () => {
-      const { data } = await apiClient.get<ApiResponse<TaskResponse>>(
+      const { data } = await apiClient.get<TaskResponse>(
         `${TASK_ENDPOINT}/${id}`
       );
-      return data.data;
+      return data;
     },
     enabled: !!id,
   });
@@ -43,10 +43,11 @@ export const useTasksByJob = (jobId: string, params?: TaskFilters) => {
   return useQuery({
     queryKey: ["tasks", "job", jobId, params],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<TaskResponse>>
-      >(`${TASK_ENDPOINT}/job/${jobId}`, { params });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<TaskResponse>>(
+        `${TASK_ENDPOINT}/job/${jobId}`,
+        { params }
+      );
+      return data;
     },
     enabled: !!jobId,
   });
@@ -60,10 +61,11 @@ export const useTasksByAssignee = (
   return useQuery({
     queryKey: ["tasks", "assignee", assigneeId, params],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<TaskResponse>>
-      >(`${TASK_ENDPOINT}/assignee/${assigneeId}`, { params });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<TaskResponse>>(
+        `${TASK_ENDPOINT}/assignee/${assigneeId}`,
+        { params }
+      );
+      return data;
     },
     enabled: !!assigneeId,
   });
@@ -74,10 +76,11 @@ export const useTasksByStatus = (status: string, params?: TaskFilters) => {
   return useQuery({
     queryKey: ["tasks", "status", status, params],
     queryFn: async () => {
-      const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<TaskResponse>>
-      >(`${TASK_ENDPOINT}/status/${status}`, { params });
-      return data.data;
+      const { data } = await apiClient.get<PaginationResponse<TaskResponse>>(
+        `${TASK_ENDPOINT}/status/${status}`,
+        { params }
+      );
+      return data;
     },
     enabled: !!status,
   });
@@ -89,11 +92,11 @@ export const useCreateTask = () => {
 
   return useMutation({
     mutationFn: async (taskData: TaskRequest) => {
-      const { data } = await apiClient.post<ApiResponse<TaskResponse>>(
+      const { data } = await apiClient.post<TaskResponse>(
         TASK_ENDPOINT,
         taskData
       );
-      return data.data;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
@@ -113,11 +116,11 @@ export const useUpdateTask = () => {
       id: string;
       taskData: Partial<TaskRequest>;
     }) => {
-      const { data } = await apiClient.put<ApiResponse<TaskResponse>>(
+      const { data } = await apiClient.put<TaskResponse>(
         `${TASK_ENDPOINT}/${id}`,
         taskData
       );
-      return data.data;
+      return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
@@ -132,7 +135,7 @@ export const useDeleteTask = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      await apiClient.delete<ApiResponse<void>>(`${TASK_ENDPOINT}/${id}`);
+      await apiClient.delete<void>(`${TASK_ENDPOINT}/${id}`);
       return id;
     },
     onSuccess: () => {

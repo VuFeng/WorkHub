@@ -3,7 +3,6 @@ import apiClient from "./client";
 import type {
   TaskCommentRequest,
   TaskCommentResponse,
-  ApiResponse,
   PaginationResponse,
   PaginationParams,
 } from "../types";
@@ -17,9 +16,9 @@ export const useTaskComments = (params?: PaginationParams) => {
     queryKey: ["task-comments", params],
     queryFn: async () => {
       const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<TaskCommentResponse>>
+        PaginationResponse<TaskCommentResponse>
       >(TASK_COMMENT_ENDPOINT, { params });
-      return data.data;
+      return data;
     },
   });
 };
@@ -29,10 +28,10 @@ export const useTaskComment = (id: string) => {
   return useQuery({
     queryKey: ["task-comments", id],
     queryFn: async () => {
-      const { data } = await apiClient.get<ApiResponse<TaskCommentResponse>>(
+      const { data } = await apiClient.get<TaskCommentResponse>(
         `${TASK_COMMENT_ENDPOINT}/${id}`
       );
-      return data.data;
+      return data;
     },
     enabled: !!id,
   });
@@ -47,9 +46,9 @@ export const useTaskCommentsByTask = (
     queryKey: ["task-comments", "task", taskId, params],
     queryFn: async () => {
       const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<TaskCommentResponse>>
+        PaginationResponse<TaskCommentResponse>
       >(`${TASK_COMMENT_ENDPOINT}/task/${taskId}`, { params });
-      return data.data;
+      return data;
     },
     enabled: !!taskId,
   });
@@ -64,9 +63,9 @@ export const useTaskCommentsByUser = (
     queryKey: ["task-comments", "user", userId, params],
     queryFn: async () => {
       const { data } = await apiClient.get<
-        ApiResponse<PaginationResponse<TaskCommentResponse>>
+        PaginationResponse<TaskCommentResponse>
       >(`${TASK_COMMENT_ENDPOINT}/user/${userId}`, { params });
-      return data.data;
+      return data;
     },
     enabled: !!userId,
   });
@@ -78,11 +77,11 @@ export const useCreateTaskComment = () => {
 
   return useMutation({
     mutationFn: async (commentData: TaskCommentRequest) => {
-      const { data } = await apiClient.post<ApiResponse<TaskCommentResponse>>(
+      const { data } = await apiClient.post<TaskCommentResponse>(
         TASK_COMMENT_ENDPOINT,
         commentData
       );
-      return data.data;
+      return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["task-comments"] });
@@ -99,9 +98,7 @@ export const useDeleteTaskComment = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      await apiClient.delete<ApiResponse<void>>(
-        `${TASK_COMMENT_ENDPOINT}/${id}`
-      );
+      await apiClient.delete<void>(`${TASK_COMMENT_ENDPOINT}/${id}`);
       return id;
     },
     onSuccess: () => {

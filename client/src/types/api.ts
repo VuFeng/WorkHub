@@ -1,11 +1,33 @@
 import type { Company, User, Job, Task, TaskComment } from "./entities";
 
-// API Response wrapper
+// API Response wrapper from backend
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
-  data: T;
+  data?: T;
   timestamp: string;
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  rejectedValue?: unknown;
+}
+
+export interface ErrorResponse {
+  error: string;
+  message: string;
+  status: number;
+  path: string;
+  timestamp?: string;
+  validationErrors?: ValidationError[];
+}
+
+export interface ApiError {
+  status: number;
+  message: string;
+  details?: ErrorResponse;
+  raw?: unknown;
 }
 
 // Pagination Response

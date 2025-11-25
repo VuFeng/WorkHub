@@ -1,4 +1,5 @@
 // Export all API hooks
+export * from './authApi';
 export * from './companyApi';
 export * from './userApi';
 export * from './jobApi';
