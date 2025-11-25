@@ -23,7 +23,6 @@ import com.workhub.server.dto.response.ApiResponse;
 import com.workhub.server.dto.response.JobResponse;
 import com.workhub.server.dto.response.PaginationResponse;
 import com.workhub.server.security.annotation.RequireAnyRole;
-import com.workhub.server.security.annotation.RequireRole;
 import com.workhub.server.service.JobService;
 
 import jakarta.validation.Valid;
