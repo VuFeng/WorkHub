@@ -1,4 +1,4 @@
-const JobsPage = () => {
+const JobManagementPage = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-4">Job Management</h1>
@@ -7,5 +7,5 @@ const JobsPage = () => {
   );
 };
 
-export default JobsPage;
+export default JobManagementPage;
 

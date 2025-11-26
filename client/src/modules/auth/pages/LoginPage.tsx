@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useLogin } from "../api/authApi";
-import { Input, Button } from "../components/ui";
-import Card from "../components/ui/Card";
-import { useMutationErrorMessage } from "../hooks";
+import { useLogin } from "../../../api/authApi";
+import { Input, Button } from "../../../components/ui";
+import Card from "../../../components/ui/Card";
+import { useMutationErrorMessage } from "../../../hooks";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -108,3 +108,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+

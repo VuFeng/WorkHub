@@ -7,15 +7,13 @@ import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
 
 // Pages
-import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
-import CompaniesPage from "./pages/CompaniesPage";
-import UsersPage from "./pages/UsersPage";
-import JobsPage from "./pages/JobsPage";
-import TasksPage from "./pages/TasksPage";
-import TaskDetailPage from "./pages/TaskDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
-
+import { LoginPage } from "./modules/auth";
+import { CompanyListPage } from "./modules/company";
+import { UserManagementPage } from "./modules/user";
+import { JobManagementPage } from "./modules/job";
+import { TaskBoardPage, TaskDetailPage } from "./modules/task";
 function App() {
   return (
     <BrowserRouter>
@@ -41,10 +39,10 @@ function App() {
           }
         >
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-          <Route path={ROUTES.COMPANIES} element={<CompaniesPage />} />
-          <Route path={ROUTES.USERS} element={<UsersPage />} />
-          <Route path={ROUTES.JOBS} element={<JobsPage />} />
-          <Route path={ROUTES.TASKS} element={<TasksPage />} />
+          <Route path={ROUTES.COMPANIES} element={<CompanyListPage />} />
+          <Route path={ROUTES.USERS} element={<UserManagementPage />} />
+          <Route path={ROUTES.JOBS} element={<JobManagementPage />} />
+          <Route path={ROUTES.TASKS} element={<TaskBoardPage />} />
           <Route path="/tasks/:id" element={<TaskDetailPage />} />
         </Route>
 
