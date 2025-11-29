@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/workhub
+    username: root
+    password: YOUR_DB_PASSWORD
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    generate-ddl: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        use_sql_comments: true
+
+aws:
+  region: ap-southeast-1
+  s3:
+    bucket: your-bucket-name
+  # Dev only – không dùng cho production
+  accessKeyId: YOUR_ACCESS_KEY_ID
+  secretAccessKey: YOUR_SECRET_ACCESS_KEY
+
+jwt:
+  secret: your-jwt-secret-key-256bits
+  expiration: 86400000
