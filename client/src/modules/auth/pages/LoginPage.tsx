@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useLogin } from "../../../api/authApi";
+import { useLogin } from "../hooks";
 import { Input, Button } from "../../../components/ui";
 import Card from "../../../components/ui/Card";
 import { useMutationErrorMessage } from "../../../hooks";
@@ -99,7 +99,7 @@ const LoginPage = () => {
           </form>
 
           <p className="mt-6 text-center text-sm text-slate-500">
-            Need an account? Contact your WorkHub administrator.
+            Need an account? Contact your Company's administrator.
           </p>
         </Card>
       </div>
@@ -108,4 +108,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-

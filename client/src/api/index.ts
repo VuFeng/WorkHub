@@ -1,9 +1,8 @@
-// Export all API hooks
-export * from './authApi';
-export * from './companyApi';
+// Export all API clients
 export * from './userApi';
 export * from './jobApi';
 export * from './taskApi';
 export * from './taskCommentApi';
+export * from './fileApi';
 export { default as apiClient } from './client';
 
