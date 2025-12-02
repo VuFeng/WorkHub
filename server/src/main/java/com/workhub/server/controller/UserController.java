@@ -34,7 +34,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @RequireAnyRole({UserRole.ADMIN, UserRole.MANAGER})
+    @RequireAnyRole({UserRole.ADMIN})
     public ResponseEntity<ApiResponse<UserResponse>> createUser(
             @Valid @RequestBody UserRequest request) {
         UserResponse user = userService.createUser(request);

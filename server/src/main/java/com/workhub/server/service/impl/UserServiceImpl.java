@@ -1,5 +1,6 @@
 package com.workhub.server.service.impl;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -13,12 +14,14 @@ import com.workhub.server.dto.request.UserRequest;
 import com.workhub.server.dto.response.PaginationResponse;
 import com.workhub.server.dto.response.UserResponse;
 import com.workhub.server.entity.Company;
+import com.workhub.server.entity.CompanyUser;
 import com.workhub.server.entity.User;
 import com.workhub.server.exception.custom.CompanyNotFoundException;
 import com.workhub.server.exception.custom.DuplicateEmailException;
 import com.workhub.server.exception.custom.UserNotFoundException;
 import com.workhub.server.mapper.UserMapper;
 import com.workhub.server.repository.CompanyRepository;
+import com.workhub.server.repository.CompanyUserRepository;
 import com.workhub.server.repository.UserRepository;
 import com.workhub.server.service.UserService;
 
@@ -31,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+    private final CompanyUserRepository companyUserRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -47,7 +51,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new CompanyNotFoundException(request.getCompanyId()));
 
         User user = userMapper.toEntity(request);
-        user.setCompany(company);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
         // Set default isActive if not provided
@@ -56,6 +59,13 @@ public class UserServiceImpl implements UserService {
         }
 
         User savedUser = userRepository.save(user);
+
+        // Create company_user relationship
+        CompanyUser companyUser = new CompanyUser();
+        companyUser.setCompany(company);
+        companyUser.setUser(savedUser);
+        companyUserRepository.save(companyUser);
+
         return userMapper.toResponse(savedUser);
     }
 
@@ -71,11 +81,25 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEmailException(request.getEmail());
         }
 
-        // Nếu đổi company, kiểm tra company mới có tồn tại không
-        if (!user.getCompany().getId().equals(request.getCompanyId())) {
+        // Handle company change through company_users relationship
+        List<CompanyUser> existingCompanyUsers = companyUserRepository.findByUserId(id);
+        boolean hasCompany = existingCompanyUsers.stream()
+                .anyMatch(cu -> cu.getCompany().getId().equals(request.getCompanyId()));
+
+        if (!hasCompany) {
+            // Check if new company exists
             Company newCompany = companyRepository.findById(request.getCompanyId())
                     .orElseThrow(() -> new CompanyNotFoundException(request.getCompanyId()));
-            user.setCompany(newCompany);
+
+            // Remove old company relationships (optional: could keep multiple companies)
+            // For now, we'll replace with new company
+            companyUserRepository.deleteAll(existingCompanyUsers);
+
+            // Create new company_user relationship
+            CompanyUser companyUser = new CompanyUser();
+            companyUser.setCompany(newCompany);
+            companyUser.setUser(user);
+            companyUserRepository.save(companyUser);
         }
 
         userMapper.updateEntityFromRequest(request, user);
@@ -117,16 +141,22 @@ public class UserServiceImpl implements UserService {
             throw new CompanyNotFoundException(companyId);
         }
 
-        Page<User> users = userRepository.findByCompanyId(companyId, PageRequest.of(page, size));
+        // Get users through company_users junction table
+        List<User> allUsers = companyUserRepository.findUsersByCompanyId(companyId);
+        
+        // Manual pagination (can be optimized with native query)
+        int start = page * size;
+        int end = Math.min(start + size, allUsers.size());
+        List<User> paginatedUsers = allUsers.subList(Math.min(start, allUsers.size()), end);
 
         return new PaginationResponse<>(
-                users.stream()
+                paginatedUsers.stream()
                         .map(userMapper::toResponse)
                         .collect(Collectors.toList()),
                 page,
                 size,
-                users.getTotalElements(),
-                users.getTotalPages());
+                allUsers.size(),
+                (int) Math.ceil((double) allUsers.size() / size));
     }
 
     @Override
@@ -135,6 +165,11 @@ public class UserServiceImpl implements UserService {
         userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
+        // Delete all company_user relationships first
+        List<CompanyUser> companyUsers = companyUserRepository.findByUserId(id);
+        companyUserRepository.deleteAll(companyUsers);
+
+        // Then delete the user
         userRepository.deleteById(id);
     }
 }

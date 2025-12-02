@@ -11,7 +11,6 @@ import com.workhub.server.entity.User;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "company", ignore = true)
     @Mapping(target = "passwordHash", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
@@ -21,12 +20,11 @@ public interface UserMapper {
     @Mapping(source = "isActive", target = "isActive")
     User toEntity(UserRequest request);
 
-    @Mapping(source = "company.id", target = "companyId")
-    @Mapping(source = "company.name", target = "companyName")
+    @Mapping(target = "companyId", ignore = true)
+    @Mapping(target = "companyName", ignore = true)
     UserResponse toResponse(User entity);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "company", ignore = true)
     @Mapping(target = "passwordHash", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

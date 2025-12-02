@@ -36,6 +36,7 @@ import lombok.Setter;
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "VARCHAR(64)")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)

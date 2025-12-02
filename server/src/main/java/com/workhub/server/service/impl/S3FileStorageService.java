@@ -9,10 +9,12 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3FileStorageService implements FileStorageService {
@@ -52,12 +54,22 @@ public class S3FileStorageService implements FileStorageService {
 
     @Override
     public void delete(String key) {
-        DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-                .bucket(awsProperties.getS3().getBucket())
-                .key(key)
-                .build();
+        try {
+            String bucket = awsProperties.getS3().getBucket();
+            log.debug("Attempting to delete object from S3 - Bucket: {}, Key: {}", bucket, key);
+            
+            DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
 
-        s3Client.deleteObject(deleteRequest);
+            s3Client.deleteObject(deleteRequest);
+            log.info("Successfully deleted object from S3 - Bucket: {}, Key: {}", bucket, key);
+        } catch (Exception e) {
+            log.error("Failed to delete object from S3 - Bucket: {}, Key: {}", 
+                    awsProperties.getS3().getBucket(), key, e);
+            throw new RuntimeException("Failed to delete file from S3: " + e.getMessage(), e);
+        }
     }
 
     // validate file size and type in the request

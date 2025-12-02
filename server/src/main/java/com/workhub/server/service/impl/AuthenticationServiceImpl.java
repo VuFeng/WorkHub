@@ -10,7 +10,9 @@ import com.workhub.server.entity.User;
 import com.workhub.server.exception.custom.CompanyNotFoundException;
 import com.workhub.server.exception.custom.DuplicateEmailException;
 import com.workhub.server.mapper.UserMapper;
+import com.workhub.server.entity.CompanyUser;
 import com.workhub.server.repository.CompanyRepository;
+import com.workhub.server.repository.CompanyUserRepository;
 import com.workhub.server.repository.UserRepository;
 import com.workhub.server.security.CustomUserDetailsService;
 import com.workhub.server.security.JwtTokenProvider;
@@ -25,7 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +39,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
     private final CompanyRepository companyRepository;
+    private final CompanyUserRepository companyUserRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -61,11 +66,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
 
+        // Get user's first company (can be extended to support primary company selection)
+        List<CompanyUser> companyUsers = companyUserRepository.findByUserId(user.getId());
+        UUID companyId = companyUsers.isEmpty() ? null : companyUsers.get(0).getCompany().getId();
+
         // Generate token with extra claims
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("userId", user.getId().toString());
         extraClaims.put("role", user.getRole().name());
-        extraClaims.put("companyId", user.getCompany().getId().toString());
+        if (companyId != null) {
+            extraClaims.put("companyId", companyId.toString());
+        }
 
         String token = jwtTokenProvider.generateToken(userDetails, extraClaims);
 
@@ -92,7 +103,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         // Create new user
         User user = new User();
-        user.setCompany(company);
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
@@ -101,12 +111,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User savedUser = userRepository.save(user);
 
+        // Create company_user relationship
+        CompanyUser companyUser = new CompanyUser();
+        companyUser.setCompany(company);
+        companyUser.setUser(savedUser);
+        companyUserRepository.save(companyUser);
+
         // Generate token
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("userId", savedUser.getId().toString());
         extraClaims.put("role", savedUser.getRole().name());
-        extraClaims.put("companyId", savedUser.getCompany().getId().toString());
+        extraClaims.put("companyId", company.getId().toString());
 
         String token = jwtTokenProvider.generateToken(userDetails, extraClaims);
 

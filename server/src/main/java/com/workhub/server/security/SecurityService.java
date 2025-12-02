@@ -2,6 +2,7 @@ package com.workhub.server.security;
 
 import com.workhub.server.constant.UserRole;
 import com.workhub.server.entity.User;
+import com.workhub.server.repository.CompanyUserRepository;
 import com.workhub.server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,6 +22,7 @@ import java.util.UUID;
 public class SecurityService {
 
     private final UserRepository userRepository;
+    private final CompanyUserRepository companyUserRepository;
 
     public Optional<User> getCurrentUser() {
         String email = getCurrentUserEmail();
@@ -34,9 +37,17 @@ public class SecurityService {
     }
 
     public Optional<UUID> getCurrentCompanyId() {
-        return getCurrentUser()
-                .map(User::getCompany)
-                .map(company -> company.getId());
+        Optional<User> currentUser = getCurrentUser();
+        if (currentUser.isEmpty()) {
+            return Optional.empty();
+        }
+        // Get the first company for the user (can be extended to support primary company)
+        List<com.workhub.server.entity.CompanyUser> companyUsers = 
+            companyUserRepository.findByUserId(currentUser.get().getId());
+        if (companyUsers.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(companyUsers.get(0).getCompany().getId());
     }
 
     public boolean hasRole(UserRole role) {

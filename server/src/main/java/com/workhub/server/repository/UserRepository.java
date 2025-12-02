@@ -17,10 +17,4 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
     
     Optional<User> findByEmail(String email);
-    
-    @Query("SELECT u FROM User u WHERE u.company.id = :companyId")
-    Page<User> findByCompanyId(@Param("companyId") UUID companyId, Pageable pageable);
-    
-    @Query("SELECT COUNT(u) FROM User u WHERE u.company.id = :companyId")
-    long countByCompanyId(@Param("companyId") UUID companyId);
 }
