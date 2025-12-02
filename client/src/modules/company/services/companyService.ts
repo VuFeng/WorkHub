@@ -54,3 +54,10 @@ export const updateCompany = async ({
 export const deleteCompany = async (id: string): Promise<void> => {
   await apiClient.delete(`${COMPANY_ENDPOINT}/${id}`);
 };
+
+export const addUserToCompany = async (
+  companyId: string,
+  userId: string
+): Promise<void> => {
+  await apiClient.post(`${COMPANY_ENDPOINT}/${companyId}/users`, { userId });
+};

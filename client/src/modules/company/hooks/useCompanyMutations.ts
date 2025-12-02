@@ -5,6 +5,7 @@ import {
   createCompany,
   updateCompany,
   deleteCompany,
+  addUserToCompany,
 } from "../services/companyService";
 import { companyKeys } from "../constants";
 
@@ -54,6 +55,24 @@ export const useDeleteCompany = () => {
     },
     onError: (error) => {
       const defaultMessage = "Unable to delete company";
+      const message = error instanceof Error ? error.message : defaultMessage;
+      toast.error(message || defaultMessage);
+    },
+  });
+};
+
+export const useAddUserToCompany = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ companyId, userId }: { companyId: string; userId: string }) =>
+      addUserToCompany(companyId, userId),
+    onSuccess: () => {
+      toast.success("User added to company successfully");
+      queryClient.invalidateQueries({ queryKey: companyKeys.all });
+    },
+    onError: (error) => {
+      const defaultMessage = "Unable to add user to company";
       const message = error instanceof Error ? error.message : defaultMessage;
       toast.error(message || defaultMessage);
     },

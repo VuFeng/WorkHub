@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Upload, X } from "lucide-react";
 import type { CompanyRequest, CompanyResponse } from "../../../types";
-import { uploadFile } from "../../../api/fileApi";
+import { uploadFile, deleteFile } from "../../../api/fileApi";
 import { Button, Dialog, Label, Input } from "../../../components/ui";
 import toast from "react-hot-toast";
 
@@ -37,6 +37,9 @@ export const CompanyForm = ({
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     editingCompany?.logoUrl || null
   );
+  const [originalLogoUrl, setOriginalLogoUrl] = useState<string | null>(
+    editingCompany?.logoUrl || null
+  );
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -49,6 +52,7 @@ export const CompanyForm = ({
       });
       setSelectedFile(null);
       setPreviewUrl(editingCompany?.logoUrl || null);
+      setOriginalLogoUrl(editingCompany?.logoUrl || null);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -73,12 +77,12 @@ export const CompanyForm = ({
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Vui lòng chọn file ảnh");
+      toast.error("Please select an image file");
       return;
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      toast.error("File không được vượt quá 5MB");
+      toast.error("File size must be less than 5MB");
       return;
     }
 
@@ -108,7 +112,7 @@ export const CompanyForm = ({
       return response.url;
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error("Lỗi khi upload file. Vui lòng thử lại.");
+      toast.error("Error uploading file. Please try again.");
       return null;
     } finally {
       setIsUploading(false);
@@ -117,13 +121,33 @@ export const CompanyForm = ({
 
   const handleSave = async () => {
     let logoUrl: string | undefined = formData.logoUrl;
+    let oldLogoUrlToDelete: string | undefined = undefined;
 
+    // If editing and logo was removed (no preview and no new file), delete old file
+    if (!previewUrl && editingCompany && originalLogoUrl) {
+      logoUrl = undefined;
+      oldLogoUrlToDelete = originalLogoUrl;
+    }
+
+    // If uploading new file, delete old file if exists
     if (selectedFile) {
       const uploadedUrl = await handleUploadFile();
       if (!uploadedUrl) return;
       logoUrl = uploadedUrl;
-    } else if (!previewUrl && editingCompany) {
-      logoUrl = undefined;
+      // If there was an original logo, delete it
+      if (originalLogoUrl && originalLogoUrl !== uploadedUrl) {
+        oldLogoUrlToDelete = originalLogoUrl;
+      }
+    }
+
+    // Delete old file from S3 if needed
+    if (oldLogoUrlToDelete && oldLogoUrlToDelete.startsWith("https://")) {
+      try {
+        await deleteFile(oldLogoUrlToDelete);
+      } catch (error) {
+        console.error("Error deleting old file from S3:", error);
+        // Continue with save even if delete fails
+      }
     }
 
     const payload: CompanyRequest = {

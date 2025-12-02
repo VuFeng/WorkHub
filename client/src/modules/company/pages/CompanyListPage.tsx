@@ -58,6 +58,9 @@ const CompanyListPage = () => {
         setDeletingCompany(null);
         refetch();
       },
+      onError: () => {
+        setDeletingCompany(null);
+      },
     });
   };
 

@@ -10,7 +10,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import DashboardPage from "./pages/DashboardPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import { LoginPage } from "./modules/auth";
-import { CompanyListPage } from "./modules/company";
+import { CompanyListPage, CompanyDetailPage } from "./modules/company";
 import { UserManagementPage } from "./modules/user";
 import { JobManagementPage } from "./modules/job";
 import { TaskBoardPage, TaskDetailPage } from "./modules/task";
@@ -40,10 +40,17 @@ function App() {
         >
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={ROUTES.COMPANIES} element={<CompanyListPage />} />
+          <Route
+            path={ROUTES.COMPANY_DETAIL(":id")}
+            element={<CompanyDetailPage />}
+          />
           <Route path={ROUTES.USERS} element={<UserManagementPage />} />
           <Route path={ROUTES.JOBS} element={<JobManagementPage />} />
           <Route path={ROUTES.TASKS} element={<TaskBoardPage />} />
-          <Route path="/tasks/:id" element={<TaskDetailPage />} />
+          <Route
+            path={ROUTES.TASK_DETAIL(":id")}
+            element={<TaskDetailPage />}
+          />
         </Route>
 
         {/* Redirect root to dashboard */}

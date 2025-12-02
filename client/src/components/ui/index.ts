@@ -9,3 +9,4 @@ export { default as Loading } from "./Loading";
 export { default as Dialog } from "./Dialog";
 export { default as Label } from "./Label";
 export { default as Table } from "./Table";
+export * from "./Tabs";

@@ -4,11 +4,11 @@ import {
   BarChart3,
   LayoutGrid,
   LogOut,
-  Menu,
   MessageCircle,
   Users,
   Wrench,
   X,
+  Menu,
 } from "lucide-react";
 import { ROUTES } from "../../constants";
 import { useAuthStore } from "../../stores";
@@ -41,20 +41,20 @@ const MenuItem = ({ icon, label, href, badge, isActive }: MenuItemProps) => {
       <div
         className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
           isActive
-            ? "bg-sidebar-primary text-sidebar-primary-foreground"
-            : "text-sidebar-foreground hover:bg-sidebar-accent/20"
+            ? "bg-primary text-primary-foreground"
+            : "text-foreground hover:bg-secondary/50"
         }`}
       >
         <span
           className={`flex shrink-0 ${
-            isActive ? "text-sidebar-primary-foreground" : "text-sidebar-accent"
+            isActive ? "text-primary-foreground" : "text-muted-foreground"
           }`}
         >
           {icon}
         </span>
         <span className="flex-1 text-sm font-medium">{label}</span>
         {badge && badge > 0 && (
-          <span className="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full bg-sidebar-accent text-sidebar-accent-foreground">
+          <span className="flex items-center justify-center w-6 h-6 text-xs font-bold rounded-full bg-primary text-primary-foreground">
             {badge}
           </span>
         )}
@@ -135,39 +135,50 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Toggle */}
-      <button
-        onClick={() => setIsOpen((open) => !open)}
-        className="fixed top-4 left-4 z-50 p-2 md:hidden bg-sidebar-primary text-sidebar-primary-foreground rounded-lg"
-        aria-label="Toggle sidebar"
-      >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+      {/* Mobile Toggle (open button when sidebar is closed) */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed cursor-pointer top-4 left-4 z-50 p-2 md:hidden rounded-lg bg-primary text-primary-foreground shadow-md"
+          aria-label="Open sidebar"
+        >
+          <Menu size={24} />
+        </button>
+      )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-transform duration-300 z-40 md:translate-x-0 bg-black ${
+        className={`fixed left-0 top-0 h-screen w-64 bg-card text-foreground border-r border-border transition-transform duration-300 z-40 md:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
         {/* Logo Section */}
-        <div className="flex items-center gap-2 px-6 py-6 border-b border-sidebar-border">
-          <div className="w-10 h-10 rounded-lg bg-sidebar-primary flex items-center justify-center">
-            <Wrench size={24} className="text-sidebar-primary-foreground" />
+        <div className="flex items-center justify-between px-6 py-6 border-b border-border">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+              <Wrench size={24} className="text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="font-bold text-lg text-foreground">WorkHub</h1>
+              <p className="text-xs text-muted-foreground">Workspace Manager</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-bold text-lg">WorkHub</h1>
-            <p className="text-xs text-sidebar-foreground/70">
-              Workspace Manager
-            </p>
-          </div>
+
+          {/* Close button (mobile only) */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="md:hidden p-2 rounded-lg hover:bg-secondary/60 text-foreground cursor-pointer"
+            aria-label="Close sidebar"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         {/* Menu Sections */}
         <nav className="flex-1 overflow-y-auto px-3 py-6 space-y-8">
           {filteredSections.map((section) => (
             <div key={section.section}>
-              <h2 className="px-4 py-2 text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider">
+              <h2 className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {section.section}
               </h2>
               <div className="space-y-2">
@@ -187,9 +198,9 @@ const Sidebar = () => {
         </nav>
 
         {/* Bottom Section */}
-        <div className="border-t border-sidebar-border p-3">
+        <div className="border-t border-border p-3">
           <button
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/20 transition-all duration-200"
+            className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-foreground hover:bg-secondary/50 transition-all duration-200"
             onClick={() => {
               // optional: integrate with authStore.logout if desired
             }}

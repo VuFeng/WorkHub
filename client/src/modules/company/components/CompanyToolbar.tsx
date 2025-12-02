@@ -8,7 +8,7 @@ interface CompanyToolbarProps {
   canCreate: boolean;
 }
 
-const CompanyToolbar = ({
+export const CompanyToolbar = ({
   searchValue,
   onSearchChange,
   onCreateClick,
@@ -33,5 +33,3 @@ const CompanyToolbar = ({
     </div>
   );
 };
-
-export default CompanyToolbar;

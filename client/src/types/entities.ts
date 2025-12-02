@@ -1,4 +1,4 @@
-import { UserRole, JobStatus, JobPriority, TaskStatus } from './enums';
+import { UserRole, JobStatus, JobPriority, TaskStatus } from "./enums";
 
 // Base entity with common fields
 export interface BaseEntity {
@@ -12,6 +12,8 @@ export interface Company extends BaseEntity {
   name: string;
   address: string;
   logoUrl?: string;
+  userCount?: number;
+  users?: User[];
 }
 
 // User
@@ -63,4 +65,3 @@ export interface TaskComment {
   message: string;
   createdAt: string;
 }
-

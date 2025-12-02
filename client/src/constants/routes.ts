@@ -6,6 +6,7 @@ export const ROUTES = {
   // Main
   DASHBOARD: "/dashboard",
   COMPANIES: "/companies",
+  COMPANY_DETAIL: (id: string) => `/companies/${id}`,
   USERS: "/users",
   JOBS: "/jobs",
   TASKS: "/tasks",
