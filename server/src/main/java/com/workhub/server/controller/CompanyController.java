@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workhub.server.constant.UserRole;
+import com.workhub.server.dto.request.AddUserToCompanyRequest;
 import com.workhub.server.dto.request.CompanyRequest;
 import com.workhub.server.dto.response.ApiResponse;
 import com.workhub.server.dto.response.CompanyResponse;
@@ -76,6 +77,16 @@ public class CompanyController {
     public ResponseEntity<ApiResponse<Void>> deleteCompany(@PathVariable UUID id) {
         companyService.deleteCompany(id);
         ApiResponse<Void> response = ApiResponse.successWithoutData("Company deleted successfully");
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/users")
+    @RequireRole(UserRole.ADMIN)
+    public ResponseEntity<ApiResponse<Void>> addUserToCompany(
+            @PathVariable UUID id,
+            @Valid @RequestBody AddUserToCompanyRequest request) {
+        companyService.addUserToCompany(id, request);
+        ApiResponse<Void> response = ApiResponse.successWithoutData("User added to company successfully");
         return ResponseEntity.ok(response);
     }
 }

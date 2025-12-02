@@ -20,9 +20,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class UserRequest {
-    @NotNull(message = "Company ID is required")
-    private UUID companyId;
-
     @NotBlank(message = "Full name is required")
     @Size(min = 2, max = 255, message = "Full name must be between 2 and 255 characters")
     private String fullName;
@@ -43,4 +40,7 @@ public class UserRequest {
     private UserRole role;
 
     private Boolean isActive;
+
+    // Optional: chỉ dùng khi muốn gán hoặc đổi company cho user
+    private UUID companyId;
 }

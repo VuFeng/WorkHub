@@ -33,7 +33,7 @@ import lombok.Setter;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "VARCHAR(64)")
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(name = "full_name", nullable = false)

@@ -153,6 +153,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .orElseThrow(() -> new CompanyNotFoundException(companyId));
 
         // Kiểm tra user có tồn tại không
+        log.info("Fetching user with id: {}", request.getUserId());
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(request.getUserId()));
 

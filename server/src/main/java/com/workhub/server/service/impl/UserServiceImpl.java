@@ -46,10 +46,6 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEmailException(request.getEmail());
         }
 
-        // Kiểm tra company có tồn tại không
-        Company company = companyRepository.findById(request.getCompanyId())
-                .orElseThrow(() -> new CompanyNotFoundException(request.getCompanyId()));
-
         User user = userMapper.toEntity(request);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
 
@@ -60,11 +56,16 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
-        // Create company_user relationship
-        CompanyUser companyUser = new CompanyUser();
-        companyUser.setCompany(company);
-        companyUser.setUser(savedUser);
-        companyUserRepository.save(companyUser);
+        // Nếu có truyền companyId thì mới tạo quan hệ company_user
+        if (request.getCompanyId() != null) {
+            Company company = companyRepository.findById(request.getCompanyId())
+                    .orElseThrow(() -> new CompanyNotFoundException(request.getCompanyId()));
+
+            CompanyUser companyUser = new CompanyUser();
+            companyUser.setCompany(company);
+            companyUser.setUser(savedUser);
+            companyUserRepository.save(companyUser);
+        }
 
         return userMapper.toResponse(savedUser);
     }
@@ -81,25 +82,27 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEmailException(request.getEmail());
         }
 
-        // Handle company change through company_users relationship
-        List<CompanyUser> existingCompanyUsers = companyUserRepository.findByUserId(id);
-        boolean hasCompany = existingCompanyUsers.stream()
-                .anyMatch(cu -> cu.getCompany().getId().equals(request.getCompanyId()));
+        // Handle company change through company_users relationship (nếu có truyền companyId)
+        if (request.getCompanyId() != null) {
+            List<CompanyUser> existingCompanyUsers = companyUserRepository.findByUserId(id);
+            boolean hasCompany = existingCompanyUsers.stream()
+                    .anyMatch(cu -> cu.getCompany().getId().equals(request.getCompanyId()));
 
-        if (!hasCompany) {
-            // Check if new company exists
-            Company newCompany = companyRepository.findById(request.getCompanyId())
-                    .orElseThrow(() -> new CompanyNotFoundException(request.getCompanyId()));
+            if (!hasCompany) {
+                // Check if new company exists
+                Company newCompany = companyRepository.findById(request.getCompanyId())
+                        .orElseThrow(() -> new CompanyNotFoundException(request.getCompanyId()));
 
-            // Remove old company relationships (optional: could keep multiple companies)
-            // For now, we'll replace with new company
-            companyUserRepository.deleteAll(existingCompanyUsers);
+                // Remove old company relationships (optional: could keep multiple companies)
+                // For now, we'll replace with new company
+                companyUserRepository.deleteAll(existingCompanyUsers);
 
-            // Create new company_user relationship
-            CompanyUser companyUser = new CompanyUser();
-            companyUser.setCompany(newCompany);
-            companyUser.setUser(user);
-            companyUserRepository.save(companyUser);
+                // Create new company_user relationship
+                CompanyUser companyUser = new CompanyUser();
+                companyUser.setCompany(newCompany);
+                companyUser.setUser(user);
+                companyUserRepository.save(companyUser);
+            }
         }
 
         userMapper.updateEntityFromRequest(request, user);
